@@ -10,14 +10,14 @@ const run = async () => {
     // Remove duplicates from Fear and Greed Index data
     const uniqueFearAndGreedData = removeDuplicates(fearAndGreedData.csvData);
 
-    // Write the unique Fear and Greed Index data to CSV file
-    fs.writeFileSync('fear_and_greed_data.csv', uniqueFearAndGreedData);
+    // Append the unique Fear and Greed Index data to CSV file
+    fs.appendFileSync('fear_and_greed_data.csv', uniqueFearAndGreedData);
 
     // Fetch historical data for the S&P 500 index
     const sp500Data = await fetchSAndP500Data(fearAndGreedData.firstDate, fearAndGreedData.lastDate);
 
-    // Write the S&P 500 index data to CSV file
-    fs.writeFileSync('sp500_data.csv', sp500Data);
+    // Append the S&P 500 index data to CSV file
+    fs.appendFileSync('sp500_data.csv', sp500Data);
 
     console.log('Data fetched and saved successfully');
   } catch (error) {

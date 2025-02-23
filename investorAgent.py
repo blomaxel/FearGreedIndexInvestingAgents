@@ -6,30 +6,40 @@ class InvestorAgent:
         self.defaultWithdrawal = 0.01
         self.name = "InvestorAgent"
     
-    def takeAction(self, sentiment: str) -> float:
+    def take_action(self, sentiment: str) -> float:
         #Sentiment will be one of the following: "extreme fear", "fear", "neutral", "greed", "extreme greed"
         #Returns: The proportion of cash to invest
         pass
     
-    def getTotalValue(self) -> float:
+    def get_total_value(self) -> float:
         return self.cash + self.investedMoney
     
-    def updateMarketValue(self, geometricIndexChange: float):
-        self.investedMoney = self.investedMoney * geometricIndexChange
+    def update_market_value(self, geometric_index_change: float):
+        self.investedMoney = self.investedMoney * geometric_index_change
 
 class ConstantInvestor (InvestorAgent):
     def __init__(self, cash = 1.0):
         super().__init__(cash)
         self.name = "Constant Investor"
-    def takeAction(self, sentiment):
+    def take_action(self, sentiment):
         return self.defaultInvestment * self.cash
+    
+class FullUntilFearInvestor (InvestorAgent):
+    def __init__(self, cash = 1.0):
+        super().__init__(cash)
+        self.name = "Fully Invested Until Fear"
+    def take_action(self, sentiment):
+        if sentiment == "extreme greed" or sentiment == "greed":
+            return self.cash
+        else:
+            return -self.investedMoney
     
 class FullyInvestedInvestor (InvestorAgent):
     def __init__(self, cash = 1.0):
         super().__init__(cash)
         self.defaultInvestment = 1.0
         self.name = "Fully Invested Investor"
-    def takeAction(self, sentiment):
+    def take_action(self, sentiment):
         return self.cash
 
 class PrudentInvestor (InvestorAgent):
@@ -37,7 +47,7 @@ class PrudentInvestor (InvestorAgent):
         super().__init__(cash)
         self.name = "Prudent Investor"
 
-    def takeAction(self, sentiment):
+    def take_action(self, sentiment):
         if sentiment == "extreme fear":
             return self.defaultInvestment * self.cash * 5
         elif sentiment == "fear":
@@ -54,24 +64,40 @@ class RebalancingInvestor (InvestorAgent):
     def __init__(self, cash = 1.0):
         super().__init__(cash)
         self.name = "Rebalancing Investor"
-    def takeAction(self, sentiment):
+    def take_action(self, sentiment):
         if sentiment == "extreme fear":
-            return 0.9 * self.getTotalValue()  - self.investedMoney
+            return 0.9 * self.get_total_value()  - self.investedMoney
         elif sentiment == "fear":
-            return 0.75 * self.getTotalValue()  - self.investedMoney
+            return 0.75 * self.get_total_value()  - self.investedMoney
         elif sentiment == "neutral":
-            return 0.60 * self.getTotalValue()  - self.investedMoney
+            return 0.60 * self.get_total_value()  - self.investedMoney
         elif sentiment == "greed":
-            return 0.40 * self.getTotalValue()  - self.investedMoney
+            return 0.40 * self.get_total_value()  - self.investedMoney
         elif sentiment == "extreme greed":
-            return 0.20 * self.getTotalValue()  - self.investedMoney
+            return 0.20 * self.get_total_value()  - self.investedMoney
+        
+class ReversedRebalancingInvestor (InvestorAgent):
+    def __init__(self, cash = 1.0):
+        super().__init__(cash)
+        self.name = "Reversed Rebalancing Investor"
+    def take_action(self, sentiment):
+        if sentiment == "extreme fear":
+            return 0.2 * self.get_total_value()  - self.investedMoney
+        elif sentiment == "fear":
+            return 0.4 * self.get_total_value()  - self.investedMoney
+        elif sentiment == "neutral":
+            return 0.60 * self.get_total_value()  - self.investedMoney
+        elif sentiment == "greed":
+            return 0.75 * self.get_total_value()  - self.investedMoney
+        elif sentiment == "extreme greed":
+            return 0.90 * self.get_total_value()  - self.investedMoney
 
 class HypeInvestor (InvestorAgent):
     def __init__(self, cash = 1.0):
         super().__init__(cash)
         self.name = "Hype Investor"
 
-    def takeAction(self, sentiment):
+    def take_action(self, sentiment):
         if sentiment == "extreme fear":
             return 0
         elif sentiment == "fear":
